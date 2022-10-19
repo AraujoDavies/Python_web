@@ -11,3 +11,9 @@ SQLALCHEMY_DATABASE_URI = \
         servidor = 'localhost',
         database = 'jogoteca'
     )
+
+import os
+
+UPLOAD_PATH = os.path.dirname(os.path.abspath(__file__)) + '/uploads'
+
+# print(UPLOAD_PATH)

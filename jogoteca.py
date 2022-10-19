@@ -4,11 +4,14 @@
 from flask import Flask
 # pip install flask-sqlalchemy==2.5.1 --> ORM q faz a comunicação entre servidor flask e database
 from flask_sqlalchemy import SQLAlchemy
+# pip install flask-wtf==1.0.0 --> proteger formulários
+from flask_wtf.csrf import CSRFProtect 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app) # instanciando o DB
+csrf = CSRFProtect(app) # o WTForms exige pois faz validação com tokens em ambos lados
 
 from views import *        
 
