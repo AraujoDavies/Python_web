@@ -1,19 +1,19 @@
 # Arquivo main do q centraliza tudo
 
-# pip install flask==2.0.2
 from flask import Flask
-# pip install flask-sqlalchemy==2.5.1 --> ORM q faz a comunicação entre servidor flask e database
 from flask_sqlalchemy import SQLAlchemy
-# pip install flask-wtf==1.0.0 --> proteger formulários
 from flask_wtf.csrf import CSRFProtect 
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app) # instanciando o DB
 csrf = CSRFProtect(app) # o WTForms exige pois faz validação com tokens em ambos lados
+bcrypt = Bcrypt(app) # pega os hashs das senhas do database
 
-from views import *        
+from views_game import *
+from views_user import *
 
 """ if abaixo para controle de escopo, ou seja, os códigos que foram importados de outro arquivo não
     serão executados. exemplo:

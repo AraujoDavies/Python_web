@@ -1,4 +1,4 @@
-# Funções q não fazem parte do app flask
+# Funções q não fazem parte do app flask + classes de formulários
 import os
 from jogoteca import app
 from flask_wtf import FlaskForm

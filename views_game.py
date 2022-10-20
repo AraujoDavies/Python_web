@@ -1,9 +1,9 @@
-# arquivo com todas as rotas do nosso site
+# arquivo com todas as rotas ralacionadas aos GAMES do nosso site
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from config import UPLOAD_PATH
 from jogoteca import app, db
-from models import Jogos, Usuarios
-from helpers import FormularioUsuario, recupera_imagem, deleta_arquivo, FormularioJogo
+from models import Jogos
+from helpers import recupera_imagem, deleta_arquivo, FormularioJogo
 import time
 
 # rotas com interface...
@@ -12,22 +12,6 @@ def index():
     lista = Jogos.query.order_by(Jogos.id) # pegando itens do banco na ordenado pelo ID
     # Usando render_template pela primeira vez
     return render_template('lista.html', titulo='Jogos', jogos=lista) 
-
-@app.route('/login')
-def login():
-    if 'usuario_logado' in session:
-        if session['usuario_logado'] != None: # se tiver logado já
-            flash('Já está logado', 'info')
-            return redirect(url_for('index'))
-    form = FormularioUsuario()
-    proxima = request.args.get('proxima') # outro caso de uso do request... pega o atributo 'proxima' na url
-    return render_template('login.html', proxima=proxima, titulo = 'Login',form=form) # passa o atributo para o html
-
-@app.route('/logout')
-def logout():
-    session['usuario_logado'] = None
-    flash('Logout efetuado com sucesso!')
-    return redirect(url_for('index'))
 
 # rota com img
 @app.route('/uploads/<nome_arquivo>')
@@ -48,7 +32,7 @@ def novo():
 def editar(id):
     # se na sessão nao tem a chave 'usuario_logado' ou tem e está com valor None... (se não logado)
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect(url_for('editar', proxima=url_for('editar')))
+        return redirect(url_for('index'))
         
     jogo = Jogos.query.filter_by(id=id).first()
     capa_jogo = recupera_imagem(id)
@@ -68,7 +52,6 @@ def deletar(id):
     else:
         flash('Você não está logado!')
     return redirect(url_for('index'))
-
 
 ################################ rotas com POST ################################
 
@@ -127,17 +110,3 @@ def atualizar():
         arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg')
 
     return redirect(url_for('index'))
-
-@app.route('/autenticar', methods=['POST',])
-def autenticar():
-    form = FormularioUsuario(request.form)
-    usuario = Usuarios.query.filter_by(nickname=form.nickname.data).first()
-    if usuario and form.senha.data == usuario.senha:
-        # if request.form['senha'] == usuario.senha:
-            session['usuario_logado'] = usuario.nickname
-            flash(usuario.nickname + ' logado com sucesso!') # primeiro exemplo de uso do FLASH
-            proxima_pagina = request.form['proxima']
-            return redirect(proxima_pagina)
-    else:
-        flash('Usuário não logado.')
-        return redirect(url_for('login'))
